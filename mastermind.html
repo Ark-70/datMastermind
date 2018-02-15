@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Master Mind </title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<link rel="stylesheet" href="mastermind.css">
+</head>
+<body>
+
+		<div class="container">
+			<h2> Bonjour, tu dois découvrir une séquence de 4 chiffres (de 1 à 6) : </h2>
+			<div class="col-5">
+				<button class="btn btn-success" id="commencer"> Commencer une partie</button>
+				<button class="btn btn-warning" id="clear">Nettoyer les erreurs</button>
+				<h5> Entrez une séquence de 4 chiffres (de 1 à 6) séparée par des espaces : </h4>
+				<p id="clavier">
+          <i class="chiffre">1</i> <i class="chiffre">2</i> <i class="chiffre">3</i> <i class="chiffre">4</i> <i class="chiffre">5</i> <i class="chiffre">6</i> <i class="chiffre">←</i> <i class="chiffre">⇤</i>
+        </p>
+				<input type="text" id="prop" maxlength="7" disabled='disabled'>
+				<button type="button" class="btn btn-primary" id="entrer" disabled='disabled'> Entrer </button>
+				<br/>
+			</div>
+			<div id="hist"> </div>
+		</div>
+
+		<!-- Insertion de la librairie jquery.js -->
+		<script src="jquery-3.3.1.min.js"> </script>
+		<!-- Insertion du script -->
+		<script src="mastermind.js"> </script>
+	</body>
+</html>

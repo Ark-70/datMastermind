@@ -1,0 +1,58 @@
+*, *:before, *:after {   /* tous les pseudo-éléments après */
+      -moz-box-sizing: border-box;      /* Vieux Firefox */
+      -webkit-box-sizing: border-box;   /* Vieux Webkit */
+      box-sizing: border-box;           /* A présent width = border + padding + le contenu  */
+}
+body {
+    font-size: 18px;
+}
+p{
+    margin:0px 30px;
+}
+h4{
+    margin:15px 0px;
+}
+input[type="text"] {
+    /* display:block; */
+    width: 100px;
+    margin: 5px 0px 5px 30px;
+}
+#zone {
+        border: 3px solid black;
+        width: 100px;
+        height: 15em;
+        margin: 5px;
+}
+button {
+    margin-left:30px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    /* display: block; */
+}
+#clavier{
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+/* #clavier>span,#histcolor>i{ */
+.chiffre{
+    border:1px solid grey;
+    padding:0px 3px;
+    font-style:normal;
+}
+
+#clavier .chiffre:first-of-type, .chiffre.n1{background-color: lightgrey;}
+#clavier .chiffre:nth-of-type(2),.chiffre.n2{background-color: #FFC700;}
+#clavier .chiffre:nth-of-type(3),.chiffre.n3{background-color: magenta;}
+#clavier .chiffre:nth-of-type(4),.chiffre.n4{background-color: #26dd1c;}
+#clavier .chiffre:nth-of-type(5),.chiffre.n5{background-color: #1c5cdd;}
+#clavier .chiffre:nth-of-type(6),.chiffre.n6{background-color: red;}
+
+#clavier>span, button{
+    cursor:pointer;
+}
+#clavier>span:hover{
+    border-color:black;
+}
+#clavier>span:active{
+    color:grey;
+}
