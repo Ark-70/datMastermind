@@ -24,7 +24,6 @@ input[type="text"] {
         margin: 5px;
 }
 button {
-    margin-left:30px;
     margin-top: 5px;
     margin-bottom: 5px;
     /* display: block; */
@@ -55,4 +54,12 @@ button {
 }
 #clavier>span:active{
     color:grey;
+}
+code{
+  color:inherit;
+  border: solid 1px;
+  border-radius:3px;
+  margin: 0 2px;
+  padding:0 5px;
+  /* box-shadow: 0 0 4px 1px; */
 }

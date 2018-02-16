@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
   // Ici, déclaration des objets de la page HTML (mise en cache)
-  let $commencer = $('#commencer'), $hist = $('#hist'), $entrer = $('#entrer'), $prop = $('#prop'), $clear = $('#clear');
+  let $commencer = $('#commencer'), $hist = $('#hist'), $entrer = $('#entrer'), $prop = $('#prop'), $nettoyer = $('#clear');
 
   // Création des constantes du jeu
   const LONGUEURSECRET = 4;    // taille du tableau à l'avance
@@ -15,45 +15,21 @@ $(document).ready(function() {
 
   //Gestion des clics du joueur
   $commencer      .click(resetJeu);
-  $clear          .click(nettoyerErreurs);
-  $('p>.chiffre') .click(gererBoutonsChiffres);
-  $('html').keypress(function( event ) {
-    if ( event.key == "Enter" || event.key == "'" ) {
-      event.preventDefault();
-    }
-    switch (event.key) {
-      case 1: case '&':
-
-        break;
-    switch (event.key) {
-      case 2: case 'é':
-
-        break;
-    switch (event.key) {
-      case 3: case '"':
-
-        break;
-    switch (event.key) {
-      case 4: case "'":
-
-        break;
-    switch (event.key) {
-      case 5: case '(':
-
-        break;
-    switch (event.key) {
-      case 6: case '-':
-        break;
-      default:
-    }
-
-  });
+  $nettoyer       .click(nettoyerErreurs);
   $entrer         .click(traiterProposition);
 
+  $('p>.chiffre') .click(function(){
+    traiterInputBoutons($(this));
+  });
+
+  $('html').keypress(function( event ) {
+    traiterInputTouches(event);
+  });
 
   function initSetup(){
     verouillerTout(true);
-    verouiller(true,$clear);
+    verouiller(true,$nettoyer);
+    resetJeu();
   }
 
   function verouillerTout(lockBool) {
@@ -100,11 +76,11 @@ $(document).ready(function() {
   function testerTableauValide(tab){
     let tableauValide = true, testInter = true, testChiffre = true;
     for (let i = 0; i < LONGUEURSECRET; i++){
-      if(tab[i]<1 || tab[i]>6)testInter = false;
+      if(tab[i]<1 || tab[i]>6)testInter=false;
       if(tab[i]!=parseInt(tab[i]+1-1))testChiffre=false;
     }
     if(!testInter)$hist.append('<span class="erreur">Attention, les chiffres doivent être compris entre 1 et 6 inclus !<br/></span>');
-    if(!testChiffre)$hist.append('<span class="erreur">Attention, le tableau doit contenir uniquement des chiffres !<br/></span>');
+    if(!testChiffre)$hist.append('<span class="erreur">Attention, le tableau doit contenir 4 chiffres !<br/></span>');
     if(!testInter || !testChiffre)tableauValide = false;
     return tableauValide;
   }
@@ -121,7 +97,7 @@ $(document).ready(function() {
 
   function nettoyerErreurs(){
     $('.erreur').remove();
-    verouiller(true,$clear);
+    verouiller(true,$nettoyer);
   }
 
 
@@ -148,8 +124,8 @@ $(document).ready(function() {
 
   function traiterProposition(){
     let prop = recupTableauChamp($prop);
-    $prop.val('');
     if(testerTableauValide(prop)){
+      $prop.val('');
       nProposition ++;
 
       let tabPlacesTrouvees = comparerTableaux(prop);
@@ -171,27 +147,78 @@ $(document).ready(function() {
         $hist.append("Hors jeu, le code est "+tabSecret.join(', ')+"<br/>");
         verouillerTout(true);
       }
-    }else verouiller(false,$clear);
+    }else verouiller(false,$nettoyer);
   }
 
-  function gererBoutonsChiffres(){
-    let placeDuBouton = $('p>.chiffre').index($(this))+1;
-    //place du bouton = sa valeur
-    switch (placeDuBouton) {
-      case 7:
-        if(!$prop.prop('disabled') && $prop.val().length>0)$prop.val( $prop.val().slice(0, -2));
+  function traiterInputBoutons($boutonClicked){
+    let inputADonner = $('p>.chiffre').index($boutonClicked)+1;
+    if (inputADonner === NOMBRECOULEURS+1) inputADonner = "Backspace";
+    if (inputADonner === NOMBRECOULEURS+2) inputADonner = "Escape";
+    traiterInputNormalisee(inputADonner);
+  }
+
+
+  function traiterInputTouches(theEvent){
+    let keyPressed = theEvent.key;
+    let tabTouchesSpeciales = ["Enter","Backspace","Escape","Delete","N","n","R","r"];
+    let tabCorrespondanceChiffres = ["&","é",'"',"'","(","-"];
+
+    //si c'est une touche spéciale
+    if(tabTouchesSpeciales.indexOf(keyPressed)!==-1){
+      theEvent.preventDefault();
+      switch (keyPressed) {
+        case "Enter":
+          $entrer.click();
+          break;
+        case "N" : case "n" : $nettoyer.click();
+          break;
+        case "R" : case "r" : $commencer.click();
+          break;
+        default:
+          traiterInputNormalisee(keyPressed);
+      }
+    }
+
+    //si c'est un chiffre
+    if(tabCorrespondanceChiffres.indexOf(keyPressed)!==-1 || $.isNumeric(keyPressed)){
+      theEvent.preventDefault();
+      let toucheEnChiffre = ($.isNumeric(keyPressed)) ? keyPressed : tabCorrespondanceChiffres.indexOf(keyPressed)+1;
+      // console.log(toucheEnChiffre);
+      traiterInputNormalisee(toucheEnChiffre);
+    }
+  }
+
+  function traiterInputNormalisee(input){
+    // 7 = retour arrière
+    // 8 = supprimer tout
+    console.log(input);
+    switch (input) {
+      case "Backspace":
+        if(!$prop.prop('disabled') && $prop.val().length>0) modifierValeurChamp("supprimerDernier");
         break;
-      case 8:
-        if(!$prop.prop('disabled') && $prop.val().length>0)$prop.val("");
+      case "Escape": case "Delete":
+        if(!$prop.prop('disabled') && $prop.val().length>0) modifierValeurChamp("supprimerTout");
         break;
-      default:
-        if(!$prop.prop('disabled') && $prop.val().length<=6)$prop.val( $prop.val()+placeDuBouton+" ");
+      default: //chiffre ici
+        if(!$prop.prop('disabled') && $prop.val().length<=6) modifierValeurChamp("ajouter",input);
         break;
     }
   }
 
-  function ajouterValeurAuChamp(valeur){
-
+  function modifierValeurChamp(typeAction, nouvelleValeur = null){
+    let $champ = $prop;
+    let contenuPrecedent = $champ.val()
+    switch (typeAction) {
+      case "ajouter":
+        $champ.val(contenuPrecedent+nouvelleValeur+" ");
+        break;
+      case "supprimerDernier":
+        $champ.val(contenuPrecedent.slice(0,-2));
+        break;
+      case "supprimerTout":
+        $champ.val("");
+        break;
+    }
   }
 
 });
