@@ -7,12 +7,16 @@ $(document).ready(function() {
   const LONGUEURSECRET = 4;    // taille du tableau à l'avance
   const NOMBRECOULEURS = 6;    // nombre de couleurs possibles
   const MAXPROPOSITIONS = 10;
-  const DEBUGACTIVE = true;
+  const DEBUGACTIF = true;
+  const DEBUGDETAILS = true;
 
+  let doublons = true;
   let tabSecret = []; // Cette variable est globale
   let nProposition = 0;
   initSetup();
 
+
+/********LISTENERS********/
   //Gestion des clics du joueur
   $commencer      .click(resetJeu);
   $nettoyer       .click(nettoyerErreurs);
@@ -21,10 +25,10 @@ $(document).ready(function() {
   $('p>.chiffre') .click(function(){
     traiterInputBoutons($(this));
   });
-
   $('html').keypress(function( event ) {
     traiterInputTouches(event);
   });
+/****************/
 
   function initSetup(){
     verouillerTout(true);
@@ -49,28 +53,40 @@ $(document).ready(function() {
     return tab;
   }
 
-  function creerTableauPrerempli(longueur,chiffreMaxPossible) {
-    // Au tableau
-    newTab = Array.apply(null, {length: longueur}).map(
-      function(value, index){
-        return index + 1;
-      }
-    );
-    return newTab;
+  function resetJeu(){
+    nProposition = 0;
+    $prop.val('');
+    $hist.html('');
+    verouillerTout(false);
+    /* Chargement du tableau en mémoire */
+    tabSecret = creerTableauRandomSansDoublons(LONGUEURSECRET,NOMBRECOULEURS);
+    if (DEBUGACTIF) console.log('Les chiffres à trouver : ' + tabSecret.join(' ')); // Affichage du tableau
   }
 
-  function shuffle(tab){
-    newTab = tab;
-    longueur = newTab.length;
-    for (let i = 0; i < longueur; i++) {
-      // On veut un élément aléatoire avec lequel échanger
-      indexRandom = Math.floor( Math.random()*(longueur-1) )
-      //là, l'élément aléatoire est tab[indexRandom]
-      tmp = newTab[i];
-      newTab[i] = newTab[indexRandom];
-      newTab[indexRandom] = tmp;
+  function creerTableauRandomAvecDoublons(longueur,chiffreMaxPossible) {
+    let randTab = Array.apply(null, {length: longueur}).map(
+      function(value, index){
+        return Math.floor(Math.random() * chiffreMaxPossible+1);
+      }
+    );
+    return randTab;
+  }
+
+  function creerTableauRandomSansDoublons(longueur,chiffreMaxPossible) {
+    let randTab = [];
+    let tab = Array.apply(null, {length: chiffreMaxPossible}).map( //tab de 1 à 6 (=chiffremaxpossible)
+      function(value, index){
+        return index+1;
+      }
+    );
+    console.log(tab);
+    for (var i = longueur - 1; i >= 0; i--) {
+      let randIndexTab = Math.floor(Math.random() * longueur);
+      randTab[i] = tab[randIndexTab];
+      tab.splice(randIndexTab,1); //retirer du tableau l'élément déjà pris
+      console.log(i,tab);
     }
-    return newTab;
+    return randTab;
   }
 
   function testerTableauValide(tab){
@@ -85,15 +101,6 @@ $(document).ready(function() {
     return tableauValide;
   }
 
-  function resetJeu(){
-    nProposition = 0;
-    $prop.val('');
-    $hist.html('');
-    verouillerTout(false);
-    /* Chargement du tableau en mémoire */
-    tabSecret = shuffle(creerTableauPrerempli(LONGUEURSECRET,NOMBRECOULEURS));
-    if (DEBUGACTIVE) console.log('Les chiffres à trouver : ' + tabSecret.join(' ')); // Affichage du tableau
-  }
 
   function nettoyerErreurs(){
     $('.erreur').remove();
@@ -101,45 +108,50 @@ $(document).ready(function() {
   }
 
 
-  function comparerTableaux(tab){
-    let bonnePlace = 0;
-    let mauvaisePlace = 0;
+  function donnerBonneMauvaisePlace(tab){
+    tabRef = tabSecret.slice(); //copie
+    let bonnesPlaces = 0;
+    let mauvaisesPlaces = 0;
 
     for (let i = 0; i < LONGUEURSECRET; i++) {
-      for (let j = 0; j < LONGUEURSECRET; j++) {
-        if(tabSecret[i]===tab[j]){ // Si un nombre à trouver correspond à un nombre de la proposition
+      for (let j = i; j < LONGUEURSECRET; j++) {
+        if(tabRef[i]===tab[j]){ // Si un nombre à trouver correspond à un nombre de la proposition
+          //si on spam un chiffre priorité à la bonne place, puis ne peut plus être compté
           if(i===j){ // Si ces nombres sont à la meme position
-            bonnePlace++;
-            if (DEBUGACTIVE) console.log("Bonne place : tabSecret["+i+"] avec prop["+j+"]");
-          }
-          else{
-            mauvaisePlace++;
-            if (DEBUGACTIVE) console.log("Mauvaise place : tabSecret["+i+"] avec prop["+j+"]");
+            bonnesPlaces++;
+            break; //fait la même chose que de flag les elements déjà faits : tab = null;
+            if (DEBUGDETAILS) console.log("+1 Bonne place : tabSecret["+i+"] avec proposition["+j+"]");
+          }else{
+            mauvaisesPlaces++;
+            break;
+            if (DEBUGDETAILS) console.log("+1 Mauvaise place : tabSecret["+i+"] avec proposition["+j+"]");
           }
         }
       }
+
     }
-    return [bonnePlace,mauvaisePlace];
+    return [bonnesPlaces,mauvaisesPlaces];
   }
 
   function traiterProposition(){
-    let prop = recupTableauChamp($prop);
+    let prop = recupTableauChamp($prop); //slice() créé une copie du tableau ici
     if(testerTableauValide(prop)){
       $prop.val('');
-      nProposition ++;
+      nProposition++;
 
-      let tabPlacesTrouvees = comparerTableaux(prop);
-      let bonnePlace = tabPlacesTrouvees[0];
-      let mauvaisePlace = tabPlacesTrouvees[1];
+      let tabPlacesTrouvees = donnerBonneMauvaisePlace(prop);
+      let bonnesPlaces = tabPlacesTrouvees[0];
+      let mauvaisesPlaces = tabPlacesTrouvees[1];
 
-      if (DEBUGACTIVE) console.log(bonnePlace+" ; "+mauvaisePlace);
+      if (DEBUGACTIF) console.log("Places : "+bonnesPlaces+" B ; "+mauvaisesPlaces+" M");
+
       let strColors="";
       for (let i = 0; i < LONGUEURSECRET; i++) {
         strColors+="<i class='chiffre n"+prop[i]+"'>"+prop[i]+"</i> ";
       }
-      $hist.append("<span id='histcolor'>"+strColors+"</span>: Bonnes places : "+bonnePlace+" ; Mauvaises places : "+mauvaisePlace+"<br/>");
+      $hist.append("<span id='histcolor'>"+strColors+"</span>: "+afficherPastillesPlaces(bonnesPlaces,mauvaisesPlaces)+"<br/>");
 
-      if(bonnePlace===4){
+      if(bonnesPlaces===4){
         $hist.append("BRAVO ! Au bout de "+nProposition+" essai(s)<br/>");
         verouillerTout(true);
       }
@@ -148,6 +160,21 @@ $(document).ready(function() {
         verouillerTout(true);
       }
     }else verouiller(false,$nettoyer);
+  }
+
+  function afficherPastillesPlaces(bonnesPlaces,mauvaisesPlaces){
+    strPastilles = "";
+    for (let i = 0; i < LONGUEURSECRET; i++) {
+      //par default, pastille blanche/rien
+      let strParticulier = "";
+      if (bonnesPlaces-i>0) {
+        strParticulier = " bonne";
+      }else if((mauvaisesPlaces+bonnesPlaces-i)>0){
+        strParticulier = " mauvaise";
+      }
+      strPastilles += "<i class='place"+strParticulier+"'></i>";
+    }
+    return strPastilles;
   }
 
   function traiterInputBoutons($boutonClicked){
@@ -191,7 +218,6 @@ $(document).ready(function() {
   function traiterInputNormalisee(input){
     // 7 = retour arrière
     // 8 = supprimer tout
-    console.log(input);
     switch (input) {
       case "Backspace":
         if(!$prop.prop('disabled') && $prop.val().length>0) modifierValeurChamp("supprimerDernier");

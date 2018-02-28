@@ -34,9 +34,27 @@ button {
 }
 /* #clavier>span,#histcolor>i{ */
 .chiffre{
+    display:inline-block;
     border:1px solid grey;
-    padding:0px 3px;
+    padding:0px 4px;
     font-style:normal;
+    cursor:pointer;
+    border-radius:3px;
+}
+
+.place{
+  display:inline-block;
+  width:9px;
+  height:9px;
+  margin:2px;
+  border:1px solid grey;
+  background-color: #fff;
+}
+.place.bonne{
+  background-color: red;
+}
+.place.mauvaise{
+  background-color: black;
 }
 
 #clavier .chiffre:first-of-type, .chiffre.n1{background-color: lightgrey;}
@@ -46,13 +64,12 @@ button {
 #clavier .chiffre:nth-of-type(5),.chiffre.n5{background-color: #1c5cdd;}
 #clavier .chiffre:nth-of-type(6),.chiffre.n6{background-color: red;}
 
-#clavier>span, button{
-    cursor:pointer;
+#clavier>.chiffre, button{
 }
-#clavier>span:hover{
+#clavier>.chiffre:hover{
     border-color:black;
 }
-#clavier>span:active{
+#clavier>.chiffre:active{
     color:grey;
 }
 code{
