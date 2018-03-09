@@ -1,4 +1,4 @@
-$(document).ready(function() {
+var Mastermind = (function($){
 
   // Ici, déclaration des objets de la page HTML (mise en cache)
   let $commencer = $('#commencer'), $hist = $('#hist'), $entrer = $('#entrer'), $prop = $('#prop'), $nettoyer = $('#clear');
@@ -13,7 +13,7 @@ $(document).ready(function() {
   let doublons = true;
   let tabSecret = []; // Cette variable est globale
   let nProposition = 0;
-  initSetup();
+  // initSetup();
 
 
 /********LISTENERS********/
@@ -247,4 +247,9 @@ $(document).ready(function() {
     }
   }
 
-});
+  // Membres publics
+  return {
+    init: initSetup
+  }
+
+})(jQuery);
