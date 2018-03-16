@@ -1,4 +1,4 @@
-var Mastermind = (function($){
+$(document).ready(function() {
 
   // Ici, déclaration des objets de la page HTML (mise en cache)
   let $commencer = $('#commencer'), $hist = $('#hist'), $entrer = $('#entrer'), $prop = $('#prop'), $nettoyer = $('#clear');
@@ -9,11 +9,11 @@ var Mastermind = (function($){
   const MAXPROPOSITIONS = 10;
   const DEBUGACTIF = true;
   const DEBUGDETAILS = true;
+  const DOUBLONS_AUTORISES = false;
 
-  let doublons = true;
   let tabSecret = []; // Cette variable est globale
   let nProposition = 0;
-  // initSetup();
+  initSetup();
 
 
 /********LISTENERS********/
@@ -59,7 +59,7 @@ var Mastermind = (function($){
     $hist.html('');
     verouillerTout(false);
     /* Chargement du tableau en mémoire */
-    tabSecret = creerTableauRandomSansDoublons(LONGUEURSECRET,NOMBRECOULEURS);
+    tabSecret = (DOUBLONS_AUTORISES)? creerTableauRandomAvecDoublons(LONGUEURSECRET,NOMBRECOULEURS) : creerTableauRandomAvecDoublons(LONGUEURSECRET,NOMBRECOULEURS);
     if (DEBUGACTIF) console.log('Les chiffres à trouver : ' + tabSecret.join(' ')); // Affichage du tableau
   }
 
@@ -247,9 +247,4 @@ var Mastermind = (function($){
     }
   }
 
-  // Membres publics
-  return {
-    init: initSetup
-  }
-
-})(jQuery);
+});
