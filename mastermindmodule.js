@@ -1,5 +1,6 @@
 $(document).ready(function() {
   //TODO LIST OF UPGRADES :
+  // EN FAIT CA BUG TOUJOURS HEIN LES RESULTATS
   // -doublons/not doublons RADIO
   // animations des buttons quand touches R/N appuyées
   // ne pas pouvoir cliquer dans l'input -> en faire une div
@@ -119,7 +120,7 @@ $(document).ready(function() {
 
 
   function donnerBonneMauvaisePlace(tab){
-    tabRef = tabSecret.slice(); //copie
+    let tabRef = tabSecret.slice(); //copie
     let bonnesPlaces = 0;
     let mauvaisesPlaces = 0;
 
@@ -130,12 +131,14 @@ $(document).ready(function() {
           //si on spam un chiffre priorité à la bonne place, puis ne peut plus être compté
           if(i===j){ // Si ces nombres sont à la meme position
             bonnesPlaces++;
+            if (DEBUGDETAILS) console.log("↪ +1 Bonne place");
+            // tabRef[i]=null;
             break; //fait la même chose que de flag les elements déjà faits : tab = null;
-            if (DEBUGDETAILS) console.log("+1 Bonne place : tabSecret["+i+"] avec proposition["+j+"]");
           }else{
             mauvaisesPlaces++;
+            if (DEBUGDETAILS) console.log("↪ +1 Mauvaise place");
+            tabRef[i]=null;
             break;
-            if (DEBUGDETAILS) console.log("+1 Mauvaise place : tabSecret["+i+"] avec proposition["+j+"]");
           }
         }
       }
@@ -165,8 +168,7 @@ $(document).ready(function() {
       if(bonnesPlaces===4){
         $hist.append("BRAVO ! Au bout de "+nProposition+" essai(s)<br/>");
         verouillerTout(true);
-      }
-      if(nProposition>=MAXPROPOSITIONS){
+      }else if(nProposition>=MAXPROPOSITIONS){
         $hist.append("Hors jeu, le code est "+tabSecret.join(', ')+"<br/>");
         verouillerTout(true);
       }
