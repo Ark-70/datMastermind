@@ -1,4 +1,15 @@
 $(document).ready(function() {
+  //TODO LIST OF UPGRADES :
+  // -doublons/not doublons RADIO
+  // animations des buttons quand touches R/N appuyées
+  // ne pas pouvoir cliquer dans l'input -> en faire une div
+    //un peu comme un cadran de vielle calculatrice/machine/etc. en design par ex
+  // longueur tabSecret
+  // nombre de combien à combien
+
+
+
+
 
   // Ici, déclaration des objets de la page HTML (mise en cache)
   let $commencer = $('#commencer'), $hist = $('#hist'), $entrer = $('#entrer'), $prop = $('#prop'), $nettoyer = $('#clear');
@@ -94,8 +105,8 @@ $(document).ready(function() {
       if(tab[i]<1 || tab[i]>6)testInter=false;
       if(tab[i]!=parseInt(tab[i]+1-1))testChiffre=false;
     }
-    if(!testInter)$hist.append('<span class="erreur">Attention, les chiffres doivent être compris entre 1 et 6 inclus !<br/></span>');
-    if(!testChiffre)$hist.append('<span class="erreur">Attention, le tableau doit contenir 4 chiffres !<br/></span>');
+    if(!testInter)$hist.append('<div class="erreur">Attention, les chiffres doivent être compris entre 1 et 6 inclus !<br/></div>');
+    if(!testChiffre)$hist.append('<div class="erreur">Attention, le tableau doit contenir 4 chiffres !<br/></div>');
     if(!testInter || !testChiffre)tableauValide = false;
     return tableauValide;
   }
@@ -149,7 +160,7 @@ $(document).ready(function() {
       for (let i = 0; i < LONGUEURSECRET; i++) {
         strColors+="<i class='chiffre n"+prop[i]+"'>"+prop[i]+"</i> ";
       }
-      $hist.append("<span id='histcolor'>"+strColors+"</span>: "+afficherPastillesPlaces(bonnesPlaces,mauvaisesPlaces)+"<br/>");
+      $hist.append("<div class='histcolor'>"+strColors+": "+afficherPastillesPlaces(bonnesPlaces,mauvaisesPlaces)+"</div>");
 
       if(bonnesPlaces===4){
         $hist.append("BRAVO ! Au bout de "+nProposition+" essai(s)<br/>");

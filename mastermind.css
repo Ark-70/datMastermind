@@ -4,8 +4,14 @@
       box-sizing: border-box;           /* A présent width = border + padding + le contenu  */
 }
 body {
-    font-size: 18px;
+  background-image: url('mastermind.jpg');
+  background-size: cover;
+  font-size: 18px;
 }
+.container{
+  background-color: rgba(255,255,255,0.5);
+}
+
 p{
     margin:0px 30px;
 }
@@ -16,12 +22,7 @@ input[type="text"] {
     /* display:block; */
     width: 100px;
     margin: 5px 0px 5px 30px;
-}
-#zone {
-        border: 3px solid black;
-        width: 100px;
-        height: 15em;
-        margin: 5px;
+    
 }
 button {
     margin-top: 5px;
@@ -34,6 +35,9 @@ button {
 }
 /* #clavier>span,#histcolor>i{ */
 .chiffre{
+    /* par defaut */
+    background-color: #eef;
+
     display:inline-block;
     border:1px solid grey;
     padding:0px 4px;
@@ -55,6 +59,10 @@ button {
 }
 .place.mauvaise{
   background-color: black;
+}
+
+.histcolor{
+  padding-bottom:5px;
 }
 
 #clavier .chiffre:first-of-type, .chiffre.n1{background-color: lightgrey;}
